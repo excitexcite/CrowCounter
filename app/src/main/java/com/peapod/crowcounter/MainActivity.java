@@ -3,8 +3,11 @@ package com.peapod.crowcounter;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -30,6 +33,42 @@ public class MainActivity extends AppCompatActivity {
             textView.setText("Насчитано " + crowNumber + " ворон"); // вывели текст на экран
         }
     }
+
+    // функция для отображения "трёх точек" меню
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu); // берем данные из ресурсов меню и преобразовываем их в меню на макете
+        return true;
+    }
+
+    // функция для обработки нажатия на єлементы меню
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // получили id выбранного пункта меню
+        int id = item.getItemId();
+
+        switch (id) {
+            // опция открытия окна с заметками
+            case R.id.action_note: {
+                return true;
+            }
+            // опция открытия окна настроек
+            case R.id.action_settings: {
+                return true;
+            }
+            // опция открытия окна с информацией о программе
+            case R.id.action_about: {
+                // intent для передачи любых данных между активностями
+                Intent intent = new Intent(MainActivity.this, AboutActivity.class); // создали intent
+                intent.putExtra("crowNumber", crowNumber); // поместили в него "ключ-значение" кол-во посчитанных вороон
+                startActivity(intent); // запустили новую активность
+                return true;
+            }
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 
     // функция сохранения данных в файл
     @Override
@@ -64,5 +103,4 @@ public class MainActivity extends AppCompatActivity {
         crowNumber++; // увеличили кол-во ворон на 1
         textView.setText("Насчитано " + crowNumber + " ворон"); // вывели текст на экран
     }
-
 }
