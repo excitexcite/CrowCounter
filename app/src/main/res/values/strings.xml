@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">CrowCounter</string>
     <string name="about_info">Эта программа написана самым великим программистом всех времён - Васей Пупкиным. На данный момент посчитано %1$d ворон</string>
+    <string name="title_activity_settings">Настройки</string>
 </resources>

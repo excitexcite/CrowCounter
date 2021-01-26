@@ -1,0 +1,26 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory
+        android:textAlignment="viewStart"
+        android:title="Настройки уведомлений">
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_baseline_notifications_24"
+            android:key="notifications"
+            android:summaryOff="Уведомления выключены"
+            android:summaryOn="Уведомления включены"
+            android:title="Включение уведомлений" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Настройка лимита ворон">
+
+        <EditTextPreference
+            android:defaultValue="10000"
+            android:icon="@drawable/crow"
+            android:key="crow_limit"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:summary="Эта настройка отвечает за максимально возможное количество ворон, которых можно посчитать"
+            android:title="Задать максимум счёта ворон" />
+    </PreferenceCategory>
+</PreferenceScreen>
