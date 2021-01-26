@@ -1,7 +1,13 @@
 package com.peapod.crowcounter;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.preference.PreferenceManager;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,6 +23,19 @@ public class MainActivity extends AppCompatActivity {
     private int crowNumber; // переменная для хранения кол-ва ворон
     private static final String KEY_COUNT = "crowNumber"; // ключ для хранения пары "ключ - кол-во посчитанных ворон"
     private SharedPreferences settings; // объект для работы с настройками
+    // название канала для уведомлений
+    private static final String NOTIFICATIONS_CHANEL = "CrowСounter";
+    // id уведомления для счёта ворон
+    private static final int COUNTCROW_ID = 101;
+    // id уведомления для счёта достижения максимума счёта ворон
+    private static final int CROWLIMIT_ID = 102;
+    // переменная для хранения состояния вкл/выкл соответствуюзей настройки
+    private boolean notificationOption = false;
+    // создадим переменные c названиями ключей (как на макете root_preference.xml) для определния в switch измененной настройки
+    public static final String CROW_LIMIT = "crow_limit";
+    public static final String NOTIFICATIONS_KEY = "notifications";
+    // переменная для хранения значения лимита ворон до его изменения
+    private int maxCrowNum = 10000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +106,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        // создали объект для управления настройками
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        //выполняем проверки на факт включенной настройки
+
+        if (preferences.contains(NOTIFICATIONS_KEY)) {
+            notificationOption = preferences.getBoolean(NOTIFICATIONS_KEY, false);
+        }
+        if (preferences.contains(CROW_LIMIT)) {
+            maxCrowNum = Integer.parseInt(preferences.getString(CROW_LIMIT, String.valueOf(maxCrowNum)));
+        }
+
         if (settings.contains(KEY_COUNT)) {
             crowNumber = settings.getInt(KEY_COUNT, 0); // считываем ранее записанное в файл значение
             textView.setText("Насчитано " + crowNumber + " ворон"); // вывели текст на экран
@@ -102,7 +132,66 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void countCrow(View view) {
+        if (crowNumber >= maxCrowNum) {
+            // PendingIntent используется для перехода между на другой экран из уведомления
+            PendingIntent intent = PendingIntent.getActivity(
+                    this,
+                    0,
+                    new Intent(MainActivity.this, SettingsActivity.class),
+                    PendingIntent.FLAG_CANCEL_CURRENT);
+            // упаковали все нужное в наше уведомление
+            NotificationCompat.Builder builder =
+                    new NotificationCompat.Builder(this, NOTIFICATIONS_CHANEL)
+                            .setSmallIcon(R.drawable.crow)
+                            .setContentTitle(getString(R.string.app_name))
+                            .setContentText("Достигнут лимит счёта ворон, все, приехали!")
+                            .setStyle(new NotificationCompat.InboxStyle())
+                            .setPriority(NotificationCompat.FLAG_INSISTENT)
+                            .setContentIntent(intent)
+                            .addAction(R.drawable.crow, "В настройки", intent)
+                            .setAutoCancel(true)
+                            .setDefaults(NotificationCompat.DEFAULT_LIGHTS | NotificationCompat.DEFAULT_SOUND);
+            // создание необходимо элементов для канала уведомлений (Notification Chanel)
+            CharSequence name = getString(R.string.app_name);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            // с помощью NotificationManagerCompat построили и отобразили уведомление
+            NotificationManagerCompat notificationManagerCompat =
+                    NotificationManagerCompat.from(this);
+            NotificationChannel channel = null;
+            // канал нужен для Android 8.0+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                channel = new NotificationChannel(CROW_LIMIT, name, importance);
+            }
+            notificationManagerCompat.createNotificationChannel(channel);
+            notificationManagerCompat.notify(CROWLIMIT_ID, builder.build());
+            return;
+        }
+
         crowNumber++; // увеличили кол-во ворон на 1
         textView.setText("Насчитано " + crowNumber + " ворон"); // вывели текст на экран
+
+        if (notificationOption) {
+            NotificationCompat.Builder builder =
+                    new NotificationCompat.Builder(this, NOTIFICATIONS_CHANEL)
+                            .setSmallIcon(R.drawable.crow)
+                            .setContentTitle(getString(R.string.app_name))
+                            .setContentText("Насчитано " + crowNumber + " ворон")
+                            .setStyle(new NotificationCompat.InboxStyle())
+                            .setPriority(NotificationCompat.FLAG_INSISTENT)
+                            .setDefaults(NotificationCompat.DEFAULT_LIGHTS | NotificationCompat.DEFAULT_SOUND);
+            // создание необходимо элементов для канала уведомлений (Notification Chanel)
+            CharSequence name = getString(R.string.app_name);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            // с помощью NotificationManagerCompat построили и отобразили уведомление
+            NotificationManagerCompat notificationManagerCompat =
+                    NotificationManagerCompat.from(this);
+            NotificationChannel channel = null;
+            // канал нужен для Android 8.0+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                channel = new NotificationChannel(NOTIFICATIONS_CHANEL, name, importance);
+            }
+            notificationManagerCompat.createNotificationChannel(channel);
+            notificationManagerCompat.notify(COUNTCROW_ID, builder.build());
+        }
     }
 }
