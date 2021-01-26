@@ -54,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
             }
             // опция открытия окна настроек
             case R.id.action_settings: {
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class); // создали intent
+                startActivity(intent); // запустили новую активность (активность с настройками)
                 return true;
             }
             // опция открытия окна с информацией о программе
