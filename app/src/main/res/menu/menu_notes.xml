@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/save"
+        android:icon="@drawable/ic_baseline_save_24"
+        android:title="Сохранить"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/copy"
+        android:icon="@drawable/ic_baseline_content_copy_24"
+        android:title="Копировать"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/select"
+        android:icon="@drawable/ic_baseline_select_all_24"
+        android:title="Выбрать"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/delete"
+        android:icon="@drawable/ic_baseline_delete_24"
+        android:title="Удалить"
+        app:showAsAction="always" />
+
+</menu>

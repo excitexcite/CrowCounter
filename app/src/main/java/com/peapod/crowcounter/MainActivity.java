@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    // функция для обработки нажатия на єлементы меню
+    // функция для обработки нажатия на элементы меню
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // получили id выбранного пункта меню
@@ -69,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
         switch (id) {
             // опция открытия окна с заметками
             case R.id.action_note: {
+                Intent intent = new Intent(MainActivity.this, NotesActivity.class); // создали intent
+                startActivity(intent); // запустили новую активность (активность с заметками)
                 return true;
             }
             // опция открытия окна настроек
